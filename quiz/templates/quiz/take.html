@@ -1,1 +1,17 @@
-Success!
+<html>
+    <body>
+        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+        <h1>{{ quiz.title }}</h1>
+        <p>{{ quiz.desc }}</p>
+        <form action="{% url 'quiz:submit' quiz.id %}" method="post">
+            {% for q in quiz.question_set.all %}
+                <h3>{{ q.txt }}</h3>
+                {% for c in q.choice_set.all %}
+                    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ c.id }}">
+                    <label for="choice{{ forloop.counter }}">{{ c.txt }}</label><br>
+                {% endfor %}
+            {% endfor %}
+        </form>
+        <input type="submit" value="Vote">
+    </body>
+</html>

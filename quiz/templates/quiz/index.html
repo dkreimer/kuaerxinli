@@ -1,0 +1,11 @@
+{% if quizzes %}
+    <ul>
+    {% for quiz in quizzes %}
+        <p><a href="{% url 'quiz:detail' quiz.id %}"><h3>{{ quiz.title }}</h3></a>
+            <br>{{ quiz.desc }}</p>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>There are no questionnaires available.</p>
+{% endif %}
+

@@ -45,8 +45,9 @@ class Question(models.Model):
 '''
 
 class ScaleQuestion(Question):
+    class Meta:
+        proxy = True
 ''' WIP --- Making a Question whose choices go from Not at all (0 points) to Extremely (4 pts)
-'''
     def setup(self):
         SCALE = [('Not at all', 0),
              ('A little', 1),
@@ -55,9 +56,8 @@ class ScaleQuestion(Question):
              ('Extremely', 4)]
         for opt in SCALE:
             choice_set.create(txt=opt[1],points=opt[2],question=self)
-
-    class Meta:
-        proxy = True
+            '''
+    
 
 class Choice(models.Model):
     '''

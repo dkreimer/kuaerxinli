@@ -4,14 +4,15 @@
         <h1>{{ quiz.title }}</h1>
         <p>{{ quiz.desc }}</p>
         <form action="{% url 'quiz:submit' quiz.id %}" method="post">
+            {% csrf_token %}
             {% for q in quiz.question_set.all %}
                 <h3>{{ q.txt }}</h3>
                 {% for c in q.choice_set.all %}
-                    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ c.id }}">
+                    <input type="radio" name="choice-q{{ q.id }}" id="choice{{ forloop.counter }}" value="{{ c.id }}">
                     <label for="choice{{ forloop.counter }}">{{ c.txt }}</label><br>
                 {% endfor %}
             {% endfor %}
         </form>
-        <input type="submit" value="Vote">
+        <input type="submit" value="Submit">
     </body>
 </html>

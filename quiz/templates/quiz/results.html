@@ -1,1 +1,5 @@
-Results page.
+{% for profile in quiz.profile_set.all %}
+    <h2>{{ profile.name }}</h2>
+    <p>{{ profile.desc }}</p>
+    <p>{{ profile.tally }}</p>
+{% endfor %}

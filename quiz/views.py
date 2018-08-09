@@ -8,21 +8,19 @@ def take(request,quiz_id):
 
 def submit(request,quiz_id):
     quiz = get_object_or_404(Quiz,pk=quiz_id)
-    print(request.POST)
-
-    # for question in quiz.question_set.all():
-    #     p = question.profile
-    #     print (request.POST)
-        #try:
-        #selected = question.choice_set.get(pk=request.POST['choice-q'+str(question.id)])
-        #p.tally += selected.points
-        #p.save()
-        # except (KeyError, Choice.DoesNotExist):
-        #     # Redisplay voting form
-        #     return render(request,'quiz/take.html',{
-        #         'quiz': quiz, 
-        #         'error_message': 'You didn\'t select a choice'
-        #         })
+    for question in quiz.question_set.all():
+        p = question.profile
+        try:
+            selected = question.choice_set.get(pk=request.POST['choice-q'+str(question.id)])
+        except (KeyError, Choice.DoesNotExist):
+            # Redisplay voting form
+            return render(request,'quiz/take.html',{
+                'quiz': quiz, 
+                'error_message': 'You didn\'t select a choice'
+                })
+        else:
+            p.tally += selected.points
+            p.save()
     return HttpResponseRedirect(reverse('quiz:results',args=(quiz.id,)))
 
     

@@ -8,9 +8,11 @@ def take(request,quiz_id):
 
 def submit(request,quiz_id):
     quiz = get_object_or_404(Quiz,pk=quiz_id)
-    for question in quiz.question_set.all():
-        p = question.profile
-        print (request.POST)
+    print(request.POST)
+
+    # for question in quiz.question_set.all():
+    #     p = question.profile
+    #     print (request.POST)
         #try:
         #selected = question.choice_set.get(pk=request.POST['choice-q'+str(question.id)])
         #p.tally += selected.points
@@ -21,7 +23,7 @@ def submit(request,quiz_id):
         #         'quiz': quiz, 
         #         'error_message': 'You didn\'t select a choice'
         #         })
-    return HttpResponseRedirect(reverse('quiz:results',args=(question.id)))
+    return HttpResponseRedirect(reverse('quiz:results',args=(quiz.id,)))
 
     
 
@@ -46,7 +48,7 @@ def vote(request, question_id):
 '''
 
 def results(request,quiz_id):
-    return render(request,'quiz/results.html',{quiz: get_object_or_404(Quiz,pk=quiz_id)})
+    return render(request,'quiz/results.html',{'quiz': get_object_or_404(Quiz,pk=quiz_id)})
 
 def index(request):
     return render(request,'quiz/index.html',{'quizzes':Quiz.objects.all()})

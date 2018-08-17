@@ -10,10 +10,20 @@ class Quiz(models.Model):
 		(2, ('Public')),
 		(3, ('Close')),
 )
-    title = models.CharField(max_length=100,default='')
-    desc = models.TextField(default='')
-    user = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
-    status = models.IntegerField(choices = STATUS_CHOICES, default= 1)
+    title = models.CharField(max_length=100,
+                            default='',
+                            verbose_name="Title")
+
+    desc = models.TextField(default='',
+                            verbose_name= 'Description')
+
+    status = models.IntegerField(choices = STATUS_CHOICES, 
+                                default= 1,
+                                verbose_name= 'Status')
+
+    class Meta:
+        verbose_name = "Quiz"
+        verbose_name_plural = "Quizzes"
 
     def __str__(self):
         return self.title
@@ -24,10 +34,19 @@ class Profile(models.Model):
     "Depression" would be a profile, and the quiz would tally how many points the user scored
     that fall under the "Depression" profile. 
     '''
-    name = models.CharField(max_length=100,default='')
-    desc = models.TextField(default='')
-    quiz = models.ForeignKey(Quiz,on_delete=models.CASCADE, blank = True, null=True)
-    tally = models.IntegerField(default=0)
+    name = models.CharField(max_length=100,
+                            default='',
+                            verbose_name= 'Name')
+
+    desc = models.TextField(default='',
+                            verbose_name= 'Description')
+
+    quiz = models.ForeignKey(Quiz,on_delete=models.CASCADE, 
+                            blank = True, 
+                            null=True,
+                            verbose_name = 'Quiz')
+
+    #tally = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -38,9 +57,20 @@ class Question(models.Model):
     '''
     #QUESTION_TYPES = (('Scale','Scale'))
 
-    txt = models.CharField(max_length=200)
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, blank = True, null = True)
-    profile = models.ForeignKey(Profile,on_delete=models.CASCADE, blank= True, null=True)
+    txt = models.CharField(max_length=200,
+                            verbose_name='Text')
+
+    quiz = models.ForeignKey(Quiz, 
+                            on_delete=models.CASCADE, 
+                            blank = True, 
+                            null = True,
+                            verbose_name = 'Quiz')
+
+    profile = models.ForeignKey(Profile,
+                                on_delete=models.CASCADE, 
+                                blank= True, 
+                                null=True,
+                                verbose_name = 'Profile')
     #Qtype = models.CharField(choices = QUESTION_TYPES, default = 'Scale')
 
     def __str__(self):
@@ -74,12 +104,33 @@ class Choice(models.Model):
     '''
     Model for a single choice (of a question with multiple choices).
     '''
-    txt = models.CharField(max_length=100)
-    points = models.IntegerField()
-    questions = models.ManyToManyField(Question, blank = True, related_name= 'choice')
+    txt = models.CharField(max_length=100,
+                            verbose_name = 'Text')
+
+    points = models.IntegerField(verbose_name='Points')
+
+    questions = models.ManyToManyField(Question, 
+                                        blank = True, 
+                                        related_name= 'choice',
+                                        verbose_name = 'Questions')
 
     def __str__(self):
         return self.txt
+
+class ProgressManager(models.Manager):
+
+    def new_progress(self, user):
+        new_progress = self.create(user=user,
+                                   score="")
+        new_progress.save()
+        return new_progress
+
+class Progress(models.Model):
+    
+    objects = ProgressManager()
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                                verbose_name = 'User')
+
 
 
 

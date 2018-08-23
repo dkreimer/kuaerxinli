@@ -8,8 +8,9 @@ def take(request,quiz_id):
 
 def submit(request,quiz_id):
     quiz = get_object_or_404(Quiz,pk=quiz_id)
+    user = request.user
     for question in quiz.question_set.all():
-        p = question.profile
+        p = question.result
         try:
             selected = question.choice_set.get(pk=request.POST['choice-q'+str(question.id)])
         except (KeyError, Choice.DoesNotExist):
@@ -21,6 +22,9 @@ def submit(request,quiz_id):
         else:
             p.tally += selected.points
             p.save()
+            # check if user has a score object associated to this result
+            # if yes: add the points to the score
+            # if no: create score object and add points to score
     return HttpResponseRedirect(reverse('quiz:results',args=(quiz.id,)))
 
     

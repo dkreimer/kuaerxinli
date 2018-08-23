@@ -9,7 +9,7 @@ class Quiz(models.Model):
 		(1, ('Draft')),
 		(2, ('Public')),
 		(3, ('Close')),
-)
+        )
     title = models.CharField(max_length=100,
                             default='',
                             verbose_name="Title")
@@ -28,11 +28,11 @@ class Quiz(models.Model):
     def __str__(self):
         return self.title
 
-class Profile(models.Model):
+class Result(models.Model):
     '''
-    Model for a possible profile that is being measured in the quiz. For example,
-    "Depression" would be a profile, and the quiz would tally how many points the user scored
-    that fall under the "Depression" profile. 
+    Model for a possible Result that is being measured in the quiz. For example,
+    "Depression" would be a Result, and the quiz would tally how many points have globally
+    been scored that fall under the "Depression" Result. "Total" is also an example of a Result.
     '''
     name = models.CharField(max_length=100,
                             default='',
@@ -46,7 +46,7 @@ class Profile(models.Model):
                             null=True,
                             verbose_name = 'Quiz')
 
-    #tally = models.IntegerField(default=0)
+    tally = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -66,11 +66,9 @@ class Question(models.Model):
                             null = True,
                             verbose_name = 'Quiz')
 
-    profile = models.ForeignKey(Profile,
-                                on_delete=models.CASCADE, 
+    result = models.ManyToManyField(Result, 
                                 blank= True, 
-                                null=True,
-                                verbose_name = 'Profile')
+                                verbose_name = 'Result')
     #Qtype = models.CharField(choices = QUESTION_TYPES, default = 'Scale')
 
     def __str__(self):
@@ -107,7 +105,8 @@ class Choice(models.Model):
     txt = models.CharField(max_length=100,
                             verbose_name = 'Text')
 
-    points = models.IntegerField(verbose_name='Points')
+    points = models.IntegerField(verbose_name='Points',
+                                default=0)
 
     questions = models.ManyToManyField(Question, 
                                         blank = True, 
@@ -116,6 +115,17 @@ class Choice(models.Model):
 
     def __str__(self):
         return self.txt
+
+class Score(models.Model):
+    '''
+    Bridges the user with the result. Holds a particular user's numerical score for a
+    particular Result.
+    '''
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                on_delete = models.CASCADE)
+    result = models.ForeignKey(Result,
+                              on_delete = models.CASCADE)
+    score = models.IntegerField(default=0)
 
 class ProgressManager(models.Manager):
 
@@ -129,7 +139,11 @@ class Progress(models.Model):
     
     objects = ProgressManager()
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                verbose_name = 'User')
+                                verbose_name = 'User',
+                                on_delete = models.CASCADE)
+    class Meta:
+        verbose_name = "User Progress"
+        verbose_name_plural = "User Progress Records"
 
 
 

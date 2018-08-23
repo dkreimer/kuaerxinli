@@ -4,9 +4,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 
 def take(request,quiz_id):
+    #only logged in users should be able to view
     return render(request, 'quiz/take.html', {'quiz':get_object_or_404(Quiz,pk=quiz_id)})
 
 def submit(request,quiz_id):
+    #only logged in users should be able to view
     quiz = get_object_or_404(Quiz,pk=quiz_id)
     user = request.user
     for question in quiz.question_set.all():
@@ -22,6 +24,15 @@ def submit(request,quiz_id):
         else:
             p.tally += selected.points
             p.save()
+            if user.score_set.get(result = p): #double check syntax
+                #(get the ser of user scores and see if any of them correspond to p)
+                s = user.score_set.get(result = p) #generalize this line/define variable earlier
+                    #like can i use getobjector404 here?
+                s.score += selected.points
+                s.save()
+            else: #create new score
+                s = Score.create(user = user, result = p, score = selected.points)
+                s.save()
             # check if user has a score object associated to this result
             # if yes: add the points to the score
             # if no: create score object and add points to score
@@ -50,8 +61,10 @@ def vote(request, question_id):
 '''
 
 def results(request,quiz_id):
+    #only logged in users should be able to view
     return render(request,'quiz/results.html',{'quiz': get_object_or_404(Quiz,pk=quiz_id)})
 
 def index(request):
+    #Only show to logged in users
     return render(request,'quiz/index.html',{'quizzes':Quiz.objects.all()})
 

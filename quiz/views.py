@@ -1,18 +1,21 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Quiz, Question, Choice, Profile
+from .models import Quiz, Question, Choice, Result, Score
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def take(request,quiz_id):
     #only logged in users should be able to view
     return render(request, 'quiz/take.html', {'quiz':get_object_or_404(Quiz,pk=quiz_id)})
 
+@login_required
 def submit(request,quiz_id):
     #only logged in users should be able to view
     quiz = get_object_or_404(Quiz,pk=quiz_id)
     user = request.user
     for question in quiz.question_set.all():
-        p = question.result
+        results = question.result.all()
         try:
             selected = question.choice_set.get(pk=request.POST['choice-q'+str(question.id)])
         except (KeyError, Choice.DoesNotExist):
@@ -22,16 +25,11 @@ def submit(request,quiz_id):
                 'error_message': 'You didn\'t select a choice'
                 })
         else:
-            p.tally += selected.points
-            p.save()
-            if user.score_set.get(result = p): #double check syntax
-                #(get the ser of user scores and see if any of them correspond to p)
-                s = user.score_set.get(result = p) #generalize this line/define variable earlier
-                    #like can i use getobjector404 here?
+            for result in results:
+                result.tally += selected.points
+                result.save()
+                s = Score.objects.get_or_create(result = result, user = user)[0]
                 s.score += selected.points
-                s.save()
-            else: #create new score
-                s = Score.create(user = user, result = p, score = selected.points)
                 s.save()
             # check if user has a score object associated to this result
             # if yes: add the points to the score
@@ -60,9 +58,12 @@ def vote(request, question_id):
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
 '''
 
+@login_required
 def results(request,quiz_id):
     #only logged in users should be able to view
-    return render(request,'quiz/results.html',{'quiz': get_object_or_404(Quiz,pk=quiz_id)})
+    quiz = get_object_or_404(Quiz,pk=quiz_id)
+    user = request.user
+    return render(request,'quiz/results.html',{'quiz': quiz,})
 
 def index(request):
     #Only show to logged in users

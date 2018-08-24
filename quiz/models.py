@@ -108,9 +108,8 @@ class Choice(models.Model):
     points = models.IntegerField(verbose_name='Points',
                                 default=0)
 
-    questions = models.ManyToManyField(Question, 
+    question = models.ManyToManyField(Question, 
                                         blank = True, 
-                                        related_name= 'choice',
                                         verbose_name = 'Questions')
 
     def __str__(self):
@@ -126,6 +125,12 @@ class Score(models.Model):
     result = models.ForeignKey(Result,
                               on_delete = models.CASCADE)
     score = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "%s" % self.score
+
+    def reset(self):
+        self.score = 0
 
 class ProgressManager(models.Manager):
 

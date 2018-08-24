@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from .models import Quiz, Question, Choice, Profile
+from .models import Quiz, Question, Choice, Result
 
 class ChoicesInline(admin.TabularInline):
-    model = Choice.questions.through
+    model = Choice.question.through
 
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [ChoicesInline]
@@ -12,8 +12,8 @@ class ChoiceAdmin(admin.ModelAdmin):
     inlines = [ChoicesInline]
     exclude = ('choices',)
 
-class ProfileInLine(admin.StackedInline):
-    model = Profile
+class ResultInLine(admin.StackedInline):
+    model = Result
     extra = 1
 
 class QuestionInLine(admin.StackedInline):
@@ -22,7 +22,7 @@ class QuestionInLine(admin.StackedInline):
 
 class QuizAdmin(admin.ModelAdmin):
     radio_fields = {"status": True}
-    inlines = [ProfileInLine,QuestionInLine]
+    inlines = [ResultInLine,QuestionInLine]
 
 
 admin.site.register(Quiz, QuizAdmin)

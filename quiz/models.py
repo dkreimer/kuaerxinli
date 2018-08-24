@@ -132,24 +132,5 @@ class Score(models.Model):
     def reset(self):
         self.score = 0
 
-class ProgressManager(models.Manager):
-
-    def new_progress(self, user):
-        new_progress = self.create(user=user,
-                                   score="")
-        new_progress.save()
-        return new_progress
-
-class Progress(models.Model):
-    
-    objects = ProgressManager()
-    user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                verbose_name = 'User',
-                                on_delete = models.CASCADE)
-    class Meta:
-        verbose_name = "User Progress"
-        verbose_name_plural = "User Progress Records"
-
-
 
 

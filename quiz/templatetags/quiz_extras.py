@@ -1,0 +1,8 @@
+from django import template
+
+register = template.Library()
+
+@register.filter
+def user_score(score_set,user):
+    '''Gets a particular user's score from a set of scores related to a specific result'''
+    return score_set.get(user = user)

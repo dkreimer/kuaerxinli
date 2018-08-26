@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from .score_process import *
 
 class Quiz(models.Model):
     ''' 
@@ -28,6 +29,14 @@ class Quiz(models.Model):
     def __str__(self):
         return self.title
 
+    def been_taken(self,user):
+        result = self.result_set.get(pk=1)
+        try:
+            Score.objects.get(user = user, result = result)
+            return True
+        except Score.DoesNotExist:
+            return False
+
 class Result(models.Model):
     '''
     Model for a possible Result that is being measured in the quiz. For example,
@@ -47,6 +56,13 @@ class Result(models.Model):
                             verbose_name = 'Quiz')
 
     tally = models.IntegerField(default=0)
+
+    
+    PROCESSES = (("ADD",'Simple addition'),
+                    ("AVG",'Average'))
+    process = models.CharField(max_length = 100,
+                                choices = PROCESSES,
+                                default = "ADD")
 
     def __str__(self):
         return self.name
@@ -124,13 +140,20 @@ class Score(models.Model):
                                 on_delete = models.CASCADE)
     result = models.ForeignKey(Result,
                               on_delete = models.CASCADE)
-    score = models.IntegerField(default=0)
+    score = models.IntegerField(default = 0)
+    final = models.FloatField(default = 0)
 
     def __str__(self):
-        return "%s" % self.score
+        return "%s" % self.final
+
+    def process_score(self):
+        func = PROCESS_DICT[self.result.process]
+        self.final = func(self)
+        self.save()
 
     def reset(self):
         self.score = 0
+        self.save()
 
 
 

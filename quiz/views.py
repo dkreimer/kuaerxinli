@@ -14,6 +14,11 @@ def submit(request,quiz_id):
     #only logged in users should be able to view
     quiz = get_object_or_404(Quiz,pk=quiz_id)
     user = request.user
+    if quiz.been_taken(user):
+        quiz_results = quiz.result_set.all()
+        for r in quiz_results:
+            for score in user.score_set.filter(result = r):
+                score.reset()
     for question in quiz.question_set.all():
         results = question.result.all()
         try:
@@ -31,6 +36,9 @@ def submit(request,quiz_id):
                 s = Score.objects.get_or_create(result = result, user = user)[0]
                 s.score += selected.points
                 s.save()
+    
+    for r in quiz_results:
+        r.score_set.filter(user = user)[0].process_score()
             # check if user has a score object associated to this result
             # if yes: add the points to the score
             # if no: create score object and add points to score

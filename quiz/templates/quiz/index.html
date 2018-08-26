@@ -1,11 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}我的自我评价{% endblock %}
+{% load quiz_extras %}
+
+{% block content %}
 {% if quizzes %}
     <ul>
     {% for quiz in quizzes %}
-        <p><a href="{% url 'quiz:detail' quiz.id %}"><h3>{{ quiz.title }}</h3></a>
-            <br>{{ quiz.desc }}</p>
+        <p><h2>{{ quiz.title }}</h2></p>
+            <p>{{ quiz.desc }}</p>
+        {% if 0 %}
+        <p><h4>你的分数</h4></p>
+        {% for result in quiz.result_set.all %}
+           <p>{{ result.name }}: {{ result.score_set|user_score:user }}</p>
+        {% endfor %}
+            <p><a href="{% url 'quiz:results' quiz.id %}">查看细节</a></p>
+        {% else %}
+        <p><a href="{% url 'quiz:detail' quiz.id %}">做问卷</a></p>
+        {% endif %}
     {% endfor %}
     </ul>
 {% else %}
-    <p>There are no questionnaires available.</p>
+    <p>没有可用的问卷。</p>
 {% endif %}
+
+{% endblock %}
 

@@ -5,10 +5,12 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-  Hi {{ user.username }}!
-  <p><a href="{% url 'logout' %}">logout</a></p>
+  欢迎 {{ user.username }}!
+  <p><a href="{% url 'logout' %}">注销</a></p>
+  <br>
+  <p><a href="{% url 'quiz:index' %}">我的自我评价</a></p>
 {% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">login</a>
+  <p>您没有登录</p>
+  <a href="{% url 'login' %}">登录</a>或者<a href="{% url 'signup' %}">注册</a>
 {% endif %}
 {% endblock %}

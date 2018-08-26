@@ -1,3 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}问卷分数{% endblock %}
+
+{% block content %}
 {% load quiz_extras %}
 {% for result in quiz.result_set.all %}
     <h2>{{ result.name }}</h2>
@@ -5,3 +10,4 @@
     <p>{{ user.username }}'s result: {{ result.score_set|user_score:user }}</p>
     <p>Average result: {{ result.tally }}</p>
 {% endfor %}
+{% endblock %}

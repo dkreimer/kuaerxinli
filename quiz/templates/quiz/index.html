@@ -9,12 +9,14 @@
     {% for quiz in quizzes %}
         <p><h2>{{ quiz.title }}</h2></p>
             <p>{{ quiz.desc }}</p>
-        {% if 0 %}
+        {% taken_by_user quiz user as taken %}
+        {% if taken %}
         <p><h4>你的分数</h4></p>
         {% for result in quiz.result_set.all %}
            <p>{{ result.name }}: {{ result.score_set|user_score:user }}</p>
         {% endfor %}
             <p><a href="{% url 'quiz:results' quiz.id %}">查看细节</a></p>
+            <p><a href="{% url 'quiz:detail' quiz.id %}">再做问卷</a></p>
         {% else %}
         <p><a href="{% url 'quiz:detail' quiz.id %}">做问卷</a></p>
         {% endif %}

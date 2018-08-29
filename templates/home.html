@@ -5,24 +5,11 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-  欢迎 {{ user.username }}! <a href="{% url 'logout' %}">注销</a>
-  <br>
-  <p><a href="{% url 'quiz:index' %}">我的自我评价</a></p>
-  <div class="container">
-    <div class="row">
-        <div class="col-sm">
-          One of three columns
-        </div>
-        <div class="col-sm">
-          One of three columns
-        </div>
-        <div class="col-sm">
-          One of three columns
-        </div>
-    </div>
-  </div>
+  欢迎 {{ user.username }}! <a href="{% url 'logout' %}" class="btn btn-link">（不是您？）</a>
 {% else %}
   <p>您没有登录</p>
-  <a href="{% url 'login' %}">登录</a>或者<a href="{% url 'signup' %}">注册</a>
+  <p><a href="{% url 'login' %}" class="btn btn-primary">登录</a></p>
+  <p><a href="{% url 'signup' %}" class="btn btn-secondary">注册</a></p>
 {% endif %}
+<div id=""></div>
 {% endblock %}

@@ -74,6 +74,5 @@ def results(request,quiz_id):
     return render(request,'quiz/results.html',{'quiz': quiz,})
 
 def index(request):
-    #Only show to logged in users
     return render(request,'quiz/index.html',{'quizzes':Quiz.objects.all()})
 

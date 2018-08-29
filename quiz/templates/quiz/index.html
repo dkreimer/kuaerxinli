@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}我的自我评价{% endblock %}
+{% block title %}欢迎{% endblock %}
 {% load quiz_extras %}
 
 {% block content %}
+{% if user.is_authenticated %}
+  <p>欢迎 {{ user.username }}! <a href="{% url 'logout' %}" class="btn btn-link">（不是您？）</a></p>
+{% endif %}
 {% if quizzes %}
     <table class="table table-striped">
     <tbody>
@@ -14,7 +17,9 @@
                     <p><h2>{{ quiz.title }}</h2></p>
                         <p>{{ quiz.desc }}</p>
                 </td>
-                {% taken_by_user quiz user as taken %}
+                {% if user.is_authenticated %}
+                    {% taken_by_user quiz user as taken %}
+                {% endif %}
                 {% if taken %}
                 <td>
                     <p><h4>你的分数</h4></p>
@@ -27,7 +32,12 @@
                 {% else %}
                 <td>
                     <p>你还没做问卷！</p>
-                    <p><a href="{% url 'quiz:detail' quiz.id %}" class="btn btn-info" role="button">做问卷</a></p>
+                    {% if user.is_authenticated %}
+                        <p><a href="{% url 'quiz:detail' quiz.id %}" class="btn btn-info" role="button">做问卷</a></p>
+                    {% else %}
+                        <p><a href="{% url 'login' %}" class="btn btn-primary">登录</a></p>
+                        <p><a href="{% url 'signup' %}" class="btn btn-secondary">注册</a></p>
+                    {% endif %}
                 </td>
                 {% endif %}
             </tr>

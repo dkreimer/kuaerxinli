@@ -14,8 +14,8 @@ def submit(request,quiz_id):
     #only logged in users should be able to view
     quiz = get_object_or_404(Quiz,pk=quiz_id)
     user = request.user
+    quiz_results = quiz.result_set.all()
     if quiz.been_taken(user):
-        quiz_results = quiz.result_set.all()
         for r in quiz_results:
             for score in user.score_set.filter(result = r):
                 score.reset()
@@ -31,17 +31,22 @@ def submit(request,quiz_id):
                 })
         else:
             for result in results:
-                result.tally += selected.points
-                result.save()
+                # result.raw_so_far += selected.points
+                # print (result.raw_so_far)
+                # result.save()
                 s = Score.objects.get_or_create(result = result, user = user)[0]
                 s.score += selected.points
                 s.save()
     
     for r in quiz_results:
-        r.score_set.filter(user = user)[0].process_score()
-            # check if user has a score object associated to this result
-            # if yes: add the points to the score
-            # if no: create score object and add points to score
+        user_score = r.score_set.filter(user = user)[0].process_score()
+        r.raw_so_far += user_score
+        r.save()
+        r.users_tally += 1
+        r.save()
+        r.avg = r.raw_so_far / r.users_tally
+        r.save()
+
     return HttpResponseRedirect(reverse('quiz:results',args=(quiz.id,)))
 
     

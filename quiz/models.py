@@ -30,12 +30,12 @@ class Quiz(models.Model):
         return self.title
 
     def been_taken(self,user):
-        result = self.result_set.get(pk=1)
-        try:
-            Score.objects.get(user = user, result = result)
-            return True
-        except Score.DoesNotExist:
-            return False
+        for result in self.result_set.all():
+            try:
+                Score.objects.get(user = user, result = result)
+                return True
+            except Score.DoesNotExist:
+                return False
 
 class Result(models.Model):
     '''
@@ -55,9 +55,12 @@ class Result(models.Model):
                             null=True,
                             verbose_name = 'Quiz')
 
-    tally = models.IntegerField(default=0)
+    users_tally = models.IntegerField(default=0)
 
-    
+    raw_so_far = models.FloatField(default=0)
+
+    avg = models.FloatField(default=0)
+
     PROCESSES = (("ADD",'Simple addition'),
                     ("AVG",'Average'))
     process = models.CharField(max_length = 100,
@@ -150,6 +153,7 @@ class Score(models.Model):
         func = PROCESS_DICT[self.result.process]
         self.final = func(self)
         self.save()
+        return self.final
 
     def reset(self):
         self.score = 0

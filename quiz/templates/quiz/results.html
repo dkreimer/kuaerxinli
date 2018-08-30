@@ -8,6 +8,6 @@
     <h2>{{ result.name }}</h2>
     <p>{{ result.desc }}</p>
     <p>{{ user.username }}'s result: {{ result.score_set|user_score:user }}</p>
-    <p>Average result: {{ result.tally }}</p>
+    <p>Average result: {{ result.avg }}</p>
 {% endfor %}
 {% endblock %}

@@ -15,6 +15,7 @@ class ChoiceAdmin(admin.ModelAdmin):
 class ResultInLine(admin.StackedInline):
     model = Result
     extra = 1
+    readonly_fields = ['users_tally','raw_so_far','avg']
 
 class QuestionInLine(admin.StackedInline):
     model = Question

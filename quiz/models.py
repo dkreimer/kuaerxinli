@@ -11,6 +11,11 @@ class Quiz(models.Model):
 		(2, ('Public')),
 		(3, ('Close')),
         )
+
+    LAYOUT = (
+        (1,('Horizontal')),
+        (2,('Vertical')),
+    )
     title = models.CharField(max_length=100,
                             default='',
                             verbose_name="Title")
@@ -21,6 +26,10 @@ class Quiz(models.Model):
     status = models.IntegerField(choices = STATUS_CHOICES, 
                                 default= 1,
                                 verbose_name= 'Status')
+
+    layout = models.IntegerField(choices= LAYOUT,
+                                default = 1,
+                                verbose_name= 'Layout for questions')
 
     class Meta:
         verbose_name = "Quiz"
@@ -55,11 +64,14 @@ class Result(models.Model):
                             null=True,
                             verbose_name = 'Quiz')
 
-    users_tally = models.IntegerField(default=0)
+    users_tally = models.IntegerField(default=0,
+                                    verbose_name='Total amount of times the quiz has been taken')
 
-    raw_so_far = models.FloatField(default=0)
+    raw_so_far = models.FloatField(default=0,
+                                verbose_name='Total amount of points amassed so far')
 
-    avg = models.FloatField(default=0)
+    avg = models.FloatField(default=0,
+                            verbose_name='Average score for this result')
 
     PROCESSES = (("ADD",'Simple addition'),
                     ("AVG",'Average'))
@@ -90,33 +102,6 @@ class Question(models.Model):
                                 verbose_name = 'Result')
     #Qtype = models.CharField(choices = QUESTION_TYPES, default = 'Scale')
 
-    def __str__(self):
-        return self.txt
-'''
-    def make_scale(self,labels=['Not at all','A little','Moderately','Quite a bit','Extremely']):
-        idx = 0
-        for lb in labels:
-            self.choice_set.create(txt=label, 
-                                 points= idx,
-                                 question = self)
-            idx+=1
-'''
-
-class ScaleQuestion(Question):
-    class Meta:
-        proxy = True
-''' WIP --- Making a Question whose choices go from Not at all (0 points) to Extremely (4 pts)
-    def setup(self):
-        SCALE = [('Not at all', 0),
-             ('A little', 1),
-             ('Moderately', 2),
-             ('Quite a bit', 3),
-             ('Extremely', 4)]
-        for opt in SCALE:
-            choice_set.create(txt=opt[1],points=opt[2],question=self)
-            '''
-    
-
 class Choice(models.Model):
     '''
     Model for a single choice (of a question with multiple choices).
@@ -125,7 +110,7 @@ class Choice(models.Model):
                             verbose_name = 'Text')
 
     points = models.IntegerField(verbose_name='Points',
-                                default=0)
+                                default=1)
 
     question = models.ManyToManyField(Question, 
                                         blank = True, 
